@@ -5,9 +5,9 @@ resource "aws_db_instance" "a3-construcao-db" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
-  db_name              = "construcaodb"
-  username             = "admin"
-  password             = "a3construcao"
+  db_name              = var.db_name
+  username             = var.db_username
+  password             = var.db_password
   parameter_group_name = "default.mysql8.0"
   publicly_accessible  = false
   vpc_security_group_ids = [aws_security_group.a3-construcao-rds-sg.id]
@@ -15,7 +15,7 @@ resource "aws_db_instance" "a3-construcao-db" {
   skip_final_snapshot  = true
 
   tags = {
-    Name = "construcaodb"
+    Name = var.db_name
   }
 }
 

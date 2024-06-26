@@ -1,7 +1,7 @@
-// Create a key pair
+// Create a key pair using the public key from the variables file
 resource "aws_key_pair" "a3-construcao-key" {
   key_name   = "a3-construcao-key"
-  public_key = file("~/.ssh/a3-construcao-key.pub")
+  public_key = var.ssh_public_key
 }
 
 // Create an EC2 instance
