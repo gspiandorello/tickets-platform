@@ -46,6 +46,10 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Terraform Login
+        run: |
+          echo ${{ secrets.TERRAFORM_TOKEN }} | terraform login
+
       - name: Terraform Apply
         id: apply
         env:
