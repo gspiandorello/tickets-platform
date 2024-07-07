@@ -76,6 +76,9 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>
+			tickets-api
+		</finalName>
 	</build>
 
 </project>
