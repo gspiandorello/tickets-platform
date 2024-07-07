@@ -46,9 +46,10 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Terraform Login
+      - name: Configure Terraform Credentials
         run: |
-          echo ${{ secrets.TERRAFORM_TOKEN }} | terraform login
+          mkdir -p ~/.terraform.d/
+          echo '{"credentials":{"app.terraform.io":{"token":"${{ secrets.TERRAFORM_TOKEN }}"}}}' > ~/.terraform.d/credentials.tfrc.json
 
       - name: Terraform Apply
         id: apply
