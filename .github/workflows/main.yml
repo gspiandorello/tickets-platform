@@ -67,8 +67,10 @@ jobs:
       - name: Deploy to EC2
         run: |
           ec2_ip=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=App Server" --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
-          scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} docker-compose.yml ec2-user@$ec2_ip:~/docker-compose.yml
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@$ec2_ip << 'EOF'
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          scp -o StrictHostKeyChecking=no -i private_key.pem docker-compose.yml ec2-user@$ec2_ip:~/docker-compose.yml
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@$ec2_ip << 'EOF'
             docker-compose -f ~/docker-compose.yml down
             docker-compose -f ~/docker-compose.yml up -d
           EOF
