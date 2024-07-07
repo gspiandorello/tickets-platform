@@ -19,7 +19,9 @@ jobs:
           distribution: "adopt"
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests
+        run: |
+          cd tickets-platform
+          mvn clean package -DskipTests
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -28,10 +30,14 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/tickets-api:latest
+        run: |
+          cd tickets-platform
+          docker build . -t ${{ secrets.DOCKER_USERNAME }}/tickets-api:latest
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/tickets-api:latest
+        run: |
+          cd tickets-platform
+          docker push ${{ secrets.DOCKER_USERNAME }}/tickets-api:latest
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -54,7 +60,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
         run: |
-          cd ./tickets-api/infra
+          cd ./tickets-platform/infra
           terraform init
           terraform plan -var "db_name=${{ secrets.DB_NAME }}" -var "db_username=${{ secrets.DB_USERNAME }}" -var "db_password=${{ secrets.DB_PASSWORD }}" -var "ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
           terraform apply -auto-approve -var "db_name=${{ secrets.DB_NAME }}" -var "db_username=${{ secrets.DB_USERNAME }}" -var "db_password=${{ secrets.DB_PASSWORD }}" -var "ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
@@ -62,7 +68,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           ec2_ip=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=App Server" --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
-          scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} docker-compose.yml ec2-user@$ec2_ip:~/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} tickets-platform/docker-compose.yml ec2-user@$ec2_ip:~/docker-compose.yml
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@$ec2_ip << 'EOF'
             docker-compose -f ~/docker-compose.yml down
             docker-compose -f ~/docker-compose.yml up -d
