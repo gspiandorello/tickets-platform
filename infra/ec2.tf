@@ -11,4 +11,8 @@ resource "aws_instance" "a3-construcao-ec2" {
   key_name      = aws_key_pair.a3-construcao-key.key_name
   vpc_security_group_ids = [aws_security_group.a3-construcao-sg.id]
   subnet_id     = aws_subnet.a3-construcao-public-subnet-01.id
+
+  tags = {
+    Name = "App Server"
+  }
 }

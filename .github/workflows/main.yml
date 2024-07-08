@@ -52,7 +52,6 @@ jobs:
           echo '{"credentials":{"app.terraform.io":{"token":"${{ secrets.TERRAFORM_TOKEN }}"}}}' > ~/.terraform.d/credentials.tfrc.json
 
       - name: Terraform Apply
-        id: apply
         env:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -67,6 +66,10 @@ jobs:
       - name: Deploy to EC2
         run: |
           ec2_ip=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=App Server" --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
+          if [ -z "$ec2_ip" ]; then
+            echo "EC2 instance not found or IP address is empty"
+            exit 1
+          fi
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           scp -o StrictHostKeyChecking=no -i private_key.pem docker-compose.yml ec2-user@$ec2_ip:~/docker-compose.yml

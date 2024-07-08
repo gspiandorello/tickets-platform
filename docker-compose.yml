@@ -4,7 +4,3 @@ services:
     image: ${{ secrets.DOCKER_USERNAME }}/tickets-api:latest
     ports:
       - "8080:8080"
-    environment:
-      - DB_NAME=${{ secrets.DB_NAME }}
-      - DB_USERNAME=${{ secrets.DB_USERNAME }}
-      - DB_PASSWORD=${{ secrets.DB_PASSWORD }}
