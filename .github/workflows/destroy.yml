@@ -23,6 +23,11 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Configure Terraform Credentials
+        run: |
+          mkdir -p ~/.terraform.d/
+          echo '{"credentials":{"app.terraform.io":{"token":"${{ secrets.TERRAFORM_TOKEN }}"}}}' > ~/.terraform.d/credentials.tfrc.json
+
       - name: Terraform Destroy
         env:
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -30,8 +35,6 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
         run: |
-          mkdir -p ~/.terraform.d/
-          echo '{"credentials":{"app.terraform.io":{"token":"${{ secrets.TERRAFORM_TOKEN }}"}}}' > ~/.terraform.d/credentials.tfrc.json
           cd ./infra
           terraform init
           terraform plan -destroy -var "db_name=${{ secrets.DB_NAME }}" -var "db_username=${{ secrets.DB_USERNAME }}" -var "db_password=${{ secrets.DB_PASSWORD }}" -var "ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
