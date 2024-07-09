@@ -1,6 +1,6 @@
 version: "3"
 services:
   app:
-    image: ${{ secrets.DOCKER_USERNAME }}/tickets-api:latest
+    image: "${DOCKER_USERNAME}/tickets-api:latest"
     ports:
       - "8080:8080"
