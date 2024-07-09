@@ -73,7 +73,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           scp -o StrictHostKeyChecking=no -i private_key.pem docker-compose.yml ec2-user@$ec2_ip:~/docker-compose.yml
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@$ec2_ip << 'EOF'
+          ssh -o StrictHostKeyChecking-no -i private_key.pem ec2-user@$ec2_ip << 'EOF'
+            sudo apt-get update
+            sudo apt-get install -y docker-compose
             docker-compose -f ~/docker-compose.yml down
             docker-compose -f ~/docker-compose.yml up -d
           EOF
